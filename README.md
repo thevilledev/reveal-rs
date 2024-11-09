@@ -2,6 +2,8 @@
 
 A terminal animation app written in Rust.
 
+![example](./assets/demo.gif)
+
 ## Usage
 
 ```
