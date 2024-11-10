@@ -17,6 +17,7 @@ use reveal::cli::{Args, AnimationStyle};
 use reveal::rainbow::rainbow_animation;
 use reveal::explosion::explosion_animation;
 use reveal::waves::waves_animation;
+use reveal::waves::waves_gradient_animation;
 
 fn main() {
     let args = Args::parse();
@@ -44,6 +45,7 @@ fn main() {
         AnimationStyle::Rainbow => rainbow_animation(&args.text, duration, &term),
         AnimationStyle::Explosion => explosion_animation(&args.text, duration, &term),
         AnimationStyle::Waves => waves_animation(&args.text, duration, &term),
+        AnimationStyle::WavesGradient => waves_gradient_animation(&args.text, duration, &term),
     }
 
     // Cleanup remains the same

@@ -16,4 +16,5 @@ pub enum AnimationStyle {
     Rainbow,
     Explosion,
     Waves,
+    WavesGradient,
 }
