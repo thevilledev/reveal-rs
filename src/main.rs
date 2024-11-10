@@ -19,6 +19,7 @@ use reveal::explosion::explosion_animation;
 use reveal::waves::waves_animation;
 use reveal::waves::waves_gradient_animation;
 use reveal::mandelbrot::mandelbrot_animation;
+use reveal::mandelbrot::mandelbrot_matrix;
 fn main() {
     let args = Args::parse();
     let duration = Duration::from_millis(args.duration);
@@ -47,6 +48,7 @@ fn main() {
         AnimationStyle::Waves => waves_animation(&args.text, duration, &term),
         AnimationStyle::WavesGradient => waves_gradient_animation(&args.text, duration, &term),
         AnimationStyle::Mandelbrot => mandelbrot_animation(&args.text, duration, &term),
+        AnimationStyle::MandelbrotMatrix => mandelbrot_matrix(&args.text, duration, &term),
     }
 
     // Cleanup remains the same
