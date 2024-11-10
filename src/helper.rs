@@ -1,13 +1,23 @@
+use std::ops::{Mul, Sub};
+use num_traits::{Float, FromPrimitive};
+
 // Helper function to convert HSV to RGB
-pub fn hsv_to_rgb(h: f32, s: f32, v: f32) -> (u8, u8, u8) {
-    let h = h * 6.0;
+pub fn hsv_to_rgb<T>(h: T, s: T, v: T) -> (u8, u8, u8)
+where
+    T: Float + FromPrimitive + Mul<Output = T> + Sub<Output = T>
+{
+    let six = T::from_f64(6.0).unwrap();
+    let one = T::from_f64(1.0).unwrap();
+    let n255 = T::from_f64(255.0).unwrap();
+
+    let h = h * six;
     let i = h.floor();
     let f = h - i;
-    let p = v * (1.0 - s);
-    let q = v * (1.0 - s * f);
-    let t = v * (1.0 - s * (1.0 - f));
+    let p = v * (one - s);
+    let q = v * (one - s * f);
+    let t = v * (one - s * (one - f));
 
-    let (r, g, b) = match i as i32 % 6 {
+    let (r, g, b) = match i.to_i32().unwrap() % 6 {
         0 => (v, t, p),
         1 => (q, v, p),
         2 => (p, v, t),
@@ -16,5 +26,7 @@ pub fn hsv_to_rgb(h: f32, s: f32, v: f32) -> (u8, u8, u8) {
         _ => (v, p, q),
     };
 
-    ((r * 255.0) as u8, (g * 255.0) as u8, (b * 255.0) as u8)
+    ((r * n255).to_u8().unwrap(),
+     (g * n255).to_u8().unwrap(),
+     (b * n255).to_u8().unwrap())
 }

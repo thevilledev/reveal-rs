@@ -32,7 +32,9 @@ pub fn mandelbrot_animation(text: &str, duration: Duration, term_signal: &Arc<At
     ).unwrap();
 
     let max_iter = 100;
-    let mut zoom: f32;
+    let zoom_speed = 0.2;
+    let zoom_reset_threshold = 50.0;
+    let mut time = 0.0;
     let center_real = -0.5;
     let center_imag = 0.0;
 
@@ -41,8 +43,12 @@ pub fn mandelbrot_animation(text: &str, duration: Duration, term_signal: &Arc<At
             return;
         }
 
-        let time = start.elapsed().as_secs_f32();
-        zoom = 1.0 + time.sin() * 0.5; // Zoom oscillates between 0.5 and 1.5
+        // Update time and handle zoom reset
+        time += 0.016; // Approximately 60fps
+        let zoom = (0.05_f64 + time * zoom_speed).exp();
+        if zoom > zoom_reset_threshold {
+            time = 0.0;
+        }
         
         for y in 1..=term.height {
             for x in 1..=term.width {
@@ -50,9 +56,9 @@ pub fn mandelbrot_animation(text: &str, duration: Duration, term_signal: &Arc<At
                     continue;
                 }
 
-                // Map screen coordinates to complex plane
-                let real = (x as f32 - term.width as f32 / 2.0) * 4.0 / (term.width as f32 * zoom) + center_real;
-                let imag = (y as f32 - term.height as f32 / 2.0) * 4.0 / (term.height as f32 * zoom) + center_imag;
+                // Map screen coordinates to complex plane using f64
+                let real = (x as f64 - term.width as f64 / 2.0) * 4.0 / (term.width as f64 * zoom) + center_real;
+                let imag = (y as f64 - term.height as f64 / 2.0) * 4.0 / (term.height as f64 * zoom) + center_imag;
 
                 let mut z_real = 0.0;
                 let mut z_imag = 0.0;
@@ -77,7 +83,7 @@ pub fn mandelbrot_animation(text: &str, duration: Duration, term_signal: &Arc<At
                     ).unwrap();
                 } else {
                     // Create smooth coloring
-                    let hue = (iter as f32 / max_iter as f32 + time * 0.1) % 1.0;
+                    let hue = (iter as f64 / max_iter as f64 + time * 0.1) % 1.0;
                     let saturation = 0.8;
                     let value = if iter < max_iter { 1.0 } else { 0.0 };
                     
