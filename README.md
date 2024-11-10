@@ -12,10 +12,6 @@ cargo run -- --style=waves --text "sup"
 cargo run -- --style=explosion --text "sup"
 ```
 
-## TODO
-
-- [ ] ctrl+c is broken
-
 ## License
 
 MIT

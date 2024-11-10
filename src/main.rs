@@ -10,10 +10,11 @@ use termion::{
     cursor::{self},
     raw::IntoRawMode,
     terminal_size,
+    event::Key,
+    input::TermRead,
 };
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
-use ctrlc;
 
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
@@ -264,14 +265,18 @@ fn main() {
     let term = Arc::new(AtomicBool::new(false));
     let term_clone = Arc::clone(&term);
 
-    // Set up Ctrl+C handler BEFORE raw mode
-    ctrlc::set_handler(move || {
-        term_clone.store(true, Ordering::SeqCst);
-        // Force immediate exit if needed
-        std::process::exit(0);
-    }).expect("Error setting Ctrl-C handler");
-
     let _raw = stdout().into_raw_mode().unwrap();
+    let stdin = std::io::stdin();
+
+    // Spawn input handling thread
+    std::thread::spawn(move || {
+        for c in stdin.keys() {
+            if let Ok(Key::Ctrl('c')) = c {
+                term_clone.store(true, Ordering::SeqCst);
+                break;
+            }
+        }
+    });
 
     print!("{}{}", termion::cursor::Hide, clear::All);
     
@@ -281,7 +286,7 @@ fn main() {
         AnimationStyle::Waves => waves_animation(&args.text, duration, &term),
     }
 
-    // Ensure cleanup happens regardless of how we exit
+    // Cleanup remains the same
     print!("{}{}{}", 
         termion::screen::ToMainScreen,
         termion::cursor::Show,
