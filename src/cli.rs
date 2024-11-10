@@ -19,4 +19,5 @@ pub enum AnimationStyle {
     WavesGradient,
     Mandelbrot,
     MandelbrotMatrix,
+    MandelbrotFast,
 }
